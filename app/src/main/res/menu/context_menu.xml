@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/show"
+		android:title="Show" />
+	<item android:id="@+id/link"
+		android:title="Link(Subscribe)" />
+	<item android:id="@+id/subscribe"
+		android:title="Subscribe" />
+</menu>

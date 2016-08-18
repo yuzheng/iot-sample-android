@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">IotApp</string>
+    <string name="no_record"> </string>
+    <string name="text_test">測試用：</string>
+    <string name="text_device">設備編號：</string>
+    <string name="text_sensor">感測器：</string>
+    <string name="btn_rawdata">取得資訊</string>
+    <string name="dialog_title">設定資訊</string>
+    <string name="dialog_message">專案金鑰(Project Key)/設備/感測器</string>
+    <string name="dialog_projectkey">請輸入專案金鑰(Project Key)：</string>
+    <string name="dialog_deviceid">請輸入設備編號：</string>
+    <string name="dialog_sensorid">請輸入感測器：</string>
+    <string name="ok">確定</string>
+    <string name="cancel">取消</string>
+    <string name="debug">Debug info</string>
+</resources>
