@@ -4,6 +4,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 
 import android.support.v7.app.AlertDialog;
@@ -35,8 +37,16 @@ import com.cht.iot.service.OpenIoTClientImpl;
 
 import org.apache.commons.codec.binary.StringUtils;
 
+import java.math.BigInteger;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 
 import iot.cht.com.iotsampleapp.R;
 
@@ -74,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEFAULT_APIKEY = "PKY9H2EBYMRF9RST2R"; //"PK1G27KG0PUFFTGBX0";
 
     private boolean isFindLocal = false;
+    private InetAddress sourceAddress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +140,9 @@ public class MainActivity extends AppCompatActivity {
 
         // init. OpenIoTClient (set projectKey)
         //initOpenIoTClient();
+
+        Thread thread = new Thread(sourecAddressThread);
+        thread.start();
     }
 
     @Override
@@ -354,6 +368,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void linkDevice(int pos){
+
+        // 2016.08.26 add for sourceAddress (fixed udp source ip)
+        if(sourceAddress != null){
+            openIoTClient.setSourceAddress(sourceAddress);
+        }
+
         if( openIoTClient.getSessions().size() > 0) {
 
             /*
@@ -393,6 +413,7 @@ public class MainActivity extends AppCompatActivity {
                 deviceTextView.setText(myDeviceId);
                 sensorTextView.setText(sensorId);
                 deviceView.setVisibility(View.VISIBLE);
+
 
                 openIoTClient.link(session, deviceKey, myDeviceId, mySensorIds);
 
@@ -536,6 +557,34 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Runnable sourecAddressThread = new Runnable(){
+        @Override
+        public void run() {
+            sourceAddress = getWifiInetAddress(context, Inet4Address.class);
+            Log.v(TAG_NAME, "source ip:"+sourceAddress.getHostAddress());
+
+            /*
+            try {
+                WifiManager wifiManager = (WifiManager) context.getSystemService(WIFI_SERVICE);
+                int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
+                // Convert little-endian to big-endianif needed
+                if (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) {
+                    ipAddress = Integer.reverseBytes(ipAddress);
+                }
+
+                byte[] ipByteArray = BigInteger.valueOf(ipAddress).toByteArray();
+                sourceAddress = InetAddress.getByAddress(ipByteArray);
+
+                Log.v(TAG_NAME, "get wifi host address:"+sourceAddress.getHostAddress());
+                //sourceAddress = InetAddress.getLocalHost(); // it crashes here
+
+            } catch (UnknownHostException e1) {
+                Log.v(TAG_NAME, "UnknownHostException");
+            }
+            */
+        }
+    };
+
     private void showToast(final String title, final String message){
         runOnUiThread(new Runnable() {
             @Override
@@ -552,5 +601,40 @@ public class MainActivity extends AppCompatActivity {
                 debugTextView.setText(message + "\n" +debugTextView.getText());
             }
         });
+    }
+
+    public static Enumeration<InetAddress> getWifiInetAddresses(final Context context) {
+        final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        final WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        final String macAddress = wifiInfo.getMacAddress();
+        final String[] macParts = macAddress.split(":");
+        final byte[] macBytes = new byte[macParts.length];
+        for (int i = 0; i< macParts.length; i++) {
+            macBytes[i] = (byte)Integer.parseInt(macParts[i], 16);
+        }
+        try {
+            final Enumeration<NetworkInterface> e =  NetworkInterface.getNetworkInterfaces();
+            while (e.hasMoreElements()) {
+                final NetworkInterface networkInterface = e.nextElement();
+                if (Arrays.equals(networkInterface.getHardwareAddress(), macBytes)) {
+                    return networkInterface.getInetAddresses();
+                }
+            }
+        } catch (SocketException e) {
+            Log.wtf("WIFIIP", "Unable to NetworkInterface.getNetworkInterfaces()");
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static<T extends InetAddress> T getWifiInetAddress(final Context context, final Class<T> inetClass) {
+        final Enumeration<InetAddress> e = getWifiInetAddresses(context);
+        while (e.hasMoreElements()) {
+            final InetAddress inetAddress = e.nextElement();
+            if (inetAddress.getClass() == inetClass) {
+                return (T)inetAddress;
+            }
+        }
+        return null;
     }
 }

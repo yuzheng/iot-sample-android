@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.DigestException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -56,6 +57,7 @@ public class ControllerClient {
 	Thread producer;
 	
 	//Socket socket;
+	InetAddress sourceAddress = null;
 	DatagramSocket socket;
 	OutputStream output = null;
 	int bufSize = 10240;
@@ -104,10 +106,22 @@ public class ControllerClient {
 	public boolean isAuthenticated(){
 		return authenticated;
 	}
+
+	public void setSourceAddress (InetAddress sourceAddress) {
+		this.sourceAddress = sourceAddress;
+	}
 	
 	public void start() throws IOException{
-		// get a datagram socket 
-        socket = new DatagramSocket();
+		// get a datagram socket
+
+		if(sourceAddress != null) {
+			LOG.info("Create socket with setting source address.");
+			socket = new DatagramSocket(10600, sourceAddress);
+		}else{
+			LOG.info("Create socket with no address info.");
+			socket = new DatagramSocket();
+		}
+        //socket = new DatagramSocket();
         //socket.setSoTimeout(timeout);
         
 		consumer = new Thread(new Runnable() {

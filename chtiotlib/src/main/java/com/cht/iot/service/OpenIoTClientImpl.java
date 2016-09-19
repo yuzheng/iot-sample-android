@@ -1,6 +1,7 @@
 package com.cht.iot.service;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +50,8 @@ public class OpenIoTClientImpl implements OpenIoTClient {
 	int controllerHost;
 	int announcementPort = 10400; // UDP (broadcast)
 	int controllerPort = 10600; // UDP
+
+	InetAddress sourceAddress = null;
 	
 	int timeout = 2000;  //Millisecond
 	long keepAliveInterval = 10000L;  //Millisecond
@@ -103,6 +106,10 @@ public class OpenIoTClientImpl implements OpenIoTClient {
 	@Override
 	public void setControllerPort(int port) {
 		this.controllerPort = port;
+	}
+
+	public void setSourceAddress (InetAddress sourceAddress) {
+		this.sourceAddress = sourceAddress;
 	}
 
 	/**
@@ -274,6 +281,9 @@ public class OpenIoTClientImpl implements OpenIoTClient {
 						}
 					}
 				});
+				if(sourceAddress != null) {
+					client.setSourceAddress(sourceAddress);
+				}
 				client.start();
 				serviceDevice.setClient(client);
 			} catch (IOException e) {
