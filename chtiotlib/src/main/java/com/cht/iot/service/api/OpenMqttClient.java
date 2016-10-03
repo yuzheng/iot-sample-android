@@ -66,6 +66,13 @@ public class OpenMqttClient {
 		url = String.format("tcp://%s:%d", host, port);
 		this.apiKey = apiKey;
 	}
+
+	public OpenMqttClient(String host, int port, String apiKey, boolean usingSSL) {
+		String protocol = "tcp";
+		if(usingSSL) protocol = "ssl";
+		url = String.format("%s://%s:%d", protocol, host, port);
+		this.apiKey = apiKey;
+	}
 	
 	/**
 	 * Connection timeout in second.
@@ -507,7 +514,7 @@ public class OpenMqttClient {
 		}
 	}
 
-	public static interface Listener {
+	public interface Listener {
 		
 		/**
 		 * The value changed of the sensor.
@@ -515,7 +522,7 @@ public class OpenMqttClient {
 		 * @param topic
 		 * @param rawdata
 		 */
-		public void onRawdata(String topic, Rawdata rawdata);
+		void onRawdata(String topic, Rawdata rawdata);
 		
 		
 		/**
@@ -524,7 +531,7 @@ public class OpenMqttClient {
 		 * @param topic
 		 * @param heatbeat
 		 */
-		public void onHeartBeat(String topic, HeartBeat heatbeat);
+		void onHeartBeat(String topic, HeartBeat heatbeat);
 		
 		/**
 		 * The device/sensor reconfiguration event from server.
@@ -532,7 +539,7 @@ public class OpenMqttClient {
 		 * @param topic
 		 * @param apiKey
 		 */
-		public void onReconfigure(String topic, String apiKey);
+		void onReconfigure(String topic, String apiKey);
 		
 		/**
 		 * The re-assigned device ID from server.
@@ -541,7 +548,7 @@ public class OpenMqttClient {
 		 * @param apiKey
 		 * @param deviceId
 		 */
-		public void onSetDeviceId(String topic, String apiKey, String deviceId);
+		void onSetDeviceId(String topic, String apiKey, String deviceId);
 	}
 	
 	public static class ListenerAdapter implements Listener {

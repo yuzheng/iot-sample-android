@@ -10,6 +10,7 @@ public class IDevice {
 	String uri;
 	Float lat;
 	Float lon;
+	String key;
 	IAttribute[] attributes;
 	
 	public IDevice() {		
@@ -104,6 +105,19 @@ public class IDevice {
 
 	public void setLon(Float lon) {
 		this.lon = lon;
+	}
+
+	/**
+	 * [optional] Device key
+	 *
+	 * @return
+	 */
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	/**

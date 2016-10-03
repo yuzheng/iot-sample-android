@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREF_DEVICEID = "deviceid";
     private static final String PREF_SENSORID = "sensorid";
     private static final String PREF_DEVICEKEY = "devicekey";
-    private static final String DEFAULT_APIKEY = "PKY9H2EBYMRF9RST2R"; //"PK1G27KG0PUFFTGBX0";
+    private static final String DEFAULT_APIKEY = "YOU KEY";
 
     private boolean isFindLocal = false;
     private InetAddress sourceAddress = null;

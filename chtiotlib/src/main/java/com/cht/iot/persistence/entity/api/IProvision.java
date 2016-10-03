@@ -32,7 +32,7 @@ public class IProvision {
 		this.deviceId = deviceId;
 	}	
 	
-	public static enum Op {
+	public enum Op {
 		SetDeviceId, Reconfigure
 	}
 }

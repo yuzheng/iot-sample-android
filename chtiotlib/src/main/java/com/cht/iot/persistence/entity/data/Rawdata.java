@@ -8,6 +8,7 @@ public class Rawdata extends Material {
 	String time;
 	Float lat;
 	Float lon;
+	String save;
 	String[] value;
 
 	public Rawdata() {
@@ -83,6 +84,19 @@ public class Rawdata extends Material {
 
 	public void setLon(Float lon) {
 		this.lon = lon;
+	}
+
+	/**
+	 * [optional] save.
+	 *
+	 * @return
+	 */
+	public String getSave() {
+		return save;
+	}
+
+	public void setSave(String save) {
+		this.save = save;
 	}
 
 	/**
